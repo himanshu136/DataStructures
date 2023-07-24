@@ -354,6 +354,7 @@ public class GraphAdjacencyList {
         bipartiteGraph(graph);
         kruskalsAlgorithim();
         twoCliqueProblem();
+        System.out.println(findOrder(new String[]{"baa", "abcd", "abca", "cab", "cad"},5,4));
     }
 
     static boolean coursesSchedule(int numCourses,int [][] arr){
@@ -1252,6 +1253,61 @@ public class GraphAdjacencyList {
                 dfs(grid,vis,nRow,nCol,m,n,list,row,col);
             }
         }
+    }
+
+    //Alien Dictionary
+    public static String findOrder(String [] dict, int N, int K)
+    {
+        // Write your code here
+        List<List<Integer>>list = new ArrayList<>();
+        for(int i=0;i<K;i++){
+            list.add(new ArrayList<>());
+        }
+        for(int i=0;i<N-1;i++){
+            String s1 = dict[i];
+            String s2 = dict[i+1];
+            int len = Math.min(s1.length(),s2.length());
+            for(int j=0;j<len;j++){
+                if(s1.charAt(j)!=s2.charAt(j)){
+                    list.get(s1.charAt(j)-'a').add(s2.charAt(j)-'a');
+                    break;
+                }
+            }
+
+        }
+        List<Integer>  result = topoSort(list,K);
+        String ans="";
+        for (int i : result){
+            ans=ans+ (char)(i + 'a');
+        }
+        return ans;
+    }
+
+    public static List<Integer> topoSort(List<List<Integer>> adj, int k){
+        int [] indegree = new int[k];
+        for(int i=0;i<k;i++){
+            for(int x:adj.get(i)){
+                indegree[x]++;
+            }
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i=0;i<k;i++) {
+            if(indegree[i]==0){
+                q.add(i);
+            }
+        }
+        List<Integer> list = new ArrayList<>();
+        while(!q.isEmpty()){
+            Integer u = q.poll();
+            list.add(u);
+            for(int v: adj.get(u)){
+                indegree[v]--;
+                if(indegree[v]==0){
+                    q.add(v);
+                }
+            }
+        }
+        return list;
     }
 
 }

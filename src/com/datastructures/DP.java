@@ -4,6 +4,8 @@ import com.sun.xml.internal.ws.addressing.WsaTubeHelper;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
@@ -575,7 +577,47 @@ public class DP {
         }
         return ans;
     }
+    Map<String,Boolean> map = new HashMap<>();
+    //InterLeaving String
+    public boolean isInterleave(String s1, String s2, String s3) {
+        int length1 = s1.length();
+        int length2 = s2.length();
+        int length3 = s3.length();
+        if(length1+length2!=length3){
+            return false;
+        }
+        return checkIsInterLeavingString(s1,s2,s3,length1,length2,length3,0,0,0);
+    }
 
+    boolean checkIsInterLeavingString(String s1, String s2, String s3, int length1, int length2,int length3, int i, int j, int k ){
+        if(k==length3){
+            return i==length1 && j==length2?true:false;
+        }
+        String key = i +"*"+ j +"*"+ k;
+        if(map.containsKey(key)) return map.get(key);
+        boolean ans;
+        if(i==length1){
+            ans =  s2.charAt(j)==s3.charAt(k)?checkIsInterLeavingString(s1,s2,s3,length1,
+                    length2,length3,i,j+1,k+1):false;
+            map.put(key,ans);
+            return ans;
+        }
+        if(j==length2){
+            ans= s1.charAt(i)==s3.charAt(k)?checkIsInterLeavingString(s1,s2,s3,length1,
+                    length2,length3,i+1,j,k+1):false;
+            map.put(key,ans);
+            return ans;
+        }
+        boolean one=false,two=false;
+        if(s1.charAt(i)==s3.charAt(k)){
+            one = checkIsInterLeavingString(s1,s2,s3,length1,length2,length3,i+1,j,k+1);
+        }
+        if(s2.charAt(j)==s3.charAt(k)){
+            two = checkIsInterLeavingString(s1,s2,s3,length1,length2,length3,i,j+1,k+1);
+        }
+        map.put(key,one || two);
+        return one || two;
+    }
 
     }
 
