@@ -355,6 +355,7 @@ public class GraphAdjacencyList {
         kruskalsAlgorithim();
         twoCliqueProblem();
         System.out.println(findOrder(new String[]{"baa", "abcd", "abca", "cab", "cad"},5,4));
+        minimumEffortPath(new int[][]{{1,2,2},{3,8,2},{5,3,5}});
     }
 
     static boolean coursesSchedule(int numCourses,int [][] arr){
@@ -676,7 +677,7 @@ public class GraphAdjacencyList {
     public static void wordLadder(){
         String begin="hot",end="dog";
         String [] wordList = {"hot","dog"};
-        Set<String> set = Arrays.stream(wordList).collect(Collectors.toSet());
+        Set<String> set = new HashSet<>(Arrays.asList(wordList));
         if(!set.contains(end)) System.out.println(0);
         Queue<String> queue = new LinkedList<>();
         queue.add(begin);
@@ -1308,6 +1309,86 @@ public class GraphAdjacencyList {
             }
         }
         return list;
+    }
+
+    public static int minimumEffortPath(int[][] heights) {
+        int n = heights.length;
+        int m = heights[0].length;
+        int [] dx ={-1,0,1,0};
+        int [] dy={0,1,0,-1};
+        int [][] dis = new int [n][m];
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                dis[i][j]=Integer.MAX_VALUE;
+            }
+        }
+        Queue<Pair<Integer,Pair<Integer,Integer>>> q =
+                new PriorityQueue<>(Comparator.comparingInt(Pair::getKey));
+        q.add(new Pair(0,new Pair(0,0)));
+        while(!q.isEmpty()){
+            Pair<Integer,Pair<Integer,Integer>> element = q.poll();
+            int diff = element.getKey();
+            Pair<Integer,Integer> cells = element.getValue();
+            int row = cells.getKey();
+            int column = cells.getValue();
+            if(row==n-1 && column==m-1) return diff;
+            for(int i=0;i<4;i++){
+                int nRow = row+dx[i];
+                int nColumn = column+dy[i];
+                if(nRow>=0 && nRow<n && nColumn>=0 && nColumn<m){
+                    int ndiff = Math.max(diff, Math.abs(heights[row][column]-heights[nRow][nColumn]));
+                    if(ndiff<dis[nRow][nColumn]){
+                        dis[nRow][nColumn]=ndiff;
+                        q.add(new Pair(ndiff,new Pair(nRow,nColumn)));
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+///K FLIGHTS
+    class Tuple{
+        int stops;
+        int u;
+        int cost;
+        public Tuple(int stops, int u, int cost){
+            this.stops = stops;
+            this.u=u;
+            this.cost=cost;
+        }
+    }
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        List<List<Pair<Integer,Integer>>> adj = new ArrayList<>();
+        for(int i=0;i<n;i++){
+            adj.add(new ArrayList<>());
+        }
+        for(int []arr:flights){
+            adj.get(arr[0]).add(new Pair(arr[1],arr[2]));
+        }
+        Queue<Tuple> pq = new LinkedList<>();
+        pq.add(new Tuple(0,src,0));
+        int[] dis = new int[n];
+        Arrays.fill(dis,Integer.MAX_VALUE);
+        dis[src]=0;
+        while(!pq.isEmpty()){
+            Tuple it = pq.poll();
+            int u = it.u;
+            int cost = it.cost;
+            int stops = it.stops;
+            if(stops>k) continue;
+            for(Pair<Integer,Integer>list:adj.get(u)){
+                int v = list.getKey();
+                int vCost = list.getValue();
+                int totalCost = vCost+cost;
+                if(totalCost<dis[v] && stops<=k){
+                    dis[v]=totalCost;
+                    pq.add(new Tuple(stops+1,v,totalCost));
+                }
+            }
+        }
+        if(dis[dst]==Integer.MAX_VALUE)return -1;
+        else return dis[dst];
+
     }
 
 }
