@@ -929,26 +929,21 @@ public class GraphAdjacencyList {
         for (int i = 0; i < edge; i++) {
             edgeList.add(i,new Edge(graph[i][0],graph[i][1],graph[i][2]));
         }
-        int[] parent=new int[V];
         int []cost=new int[V];
         Arrays.fill(cost,Integer.MAX_VALUE);
-        parent[0]=-1;
         cost[0]=0;
-        boolean isUpdated;
         for (int i = 0; i < V-1; i++) {
-             isUpdated = false;
-            for (int j=0;j<edge;j++){
+            for (int j = 0; j < edge; j++) {
                 int u = edgeList.get(j).src;
-                int v= edgeList.get(j).dest;
-                int weight= edgeList.get(j).weight;
-                if(cost[i]!= Integer.MAX_VALUE && cost[u]+weight<cost[v]){
-                    cost[v]=cost[u]+weight;
-                    parent[v]=u;
-                    isUpdated=true;
+                int v = edgeList.get(j).dest;
+                int weight = edgeList.get(j).weight;
+                if (cost[i] != Integer.MAX_VALUE && cost[u] + weight < cost[v]) {
+                    cost[v] = cost[u] + weight;
                 }
-                if(!isUpdated) break;
             }
-            for (int j = 0; j < edge && isUpdated; j++) {
+        }
+            //Perform relaxation one more time just to check if the condition becomes true
+            for (int j = 0; j < edge; j++) {
                 int u = edgeList.get(j).src;
                 int v = edgeList.get(j).dest;
                 int wt = edgeList.get(j).weight;
@@ -958,7 +953,6 @@ public class GraphAdjacencyList {
                     return;
                 }
             }
-        }
         System.out.println("Shortest distance using bellmanford is ");
         Arrays.stream(cost).forEach(System.out::println);
     }
@@ -1221,6 +1215,32 @@ public class GraphAdjacencyList {
         return GC;
     }
 
+    //To find all the distances from all sources to nodes
+    public static void floydWarshallAlgo(int [][]graph){
+        int n = graph.length;
+        for (int i = 0; i < n; i++) {
+            for (int j=0;j<n;j++){
+                if(graph[i][j]==-1) graph[i][j]=Integer.MAX_VALUE;
+                if(i==j) graph[i][j]=0;
+            }
+        }
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    graph[i][j]=Math.min(graph[i][j],graph[i][k]+graph[k][j]);
+                }
+            }
+        }
+        //checking for the negative cycles
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if(graph[i][j]==Integer.MAX_VALUE){
+                    graph[i][j]=-1;
+                }
+            }
+        }
+    }
+
 
     int countDistinctIslands(int[][] grid) {
         // Your Code here
@@ -1388,7 +1408,44 @@ public class GraphAdjacencyList {
         }
         if(dis[dst]==Integer.MAX_VALUE)return -1;
         else return dis[dst];
-
+    }
+    public int countPaths(int n, int[][] roads) {
+        int mod = (int) Math.pow(10,9)+7;
+        List<List<Pair<Integer,Integer>>> adj = new ArrayList<>();
+        for(int i=0;i<n;i++){
+            adj.add(new ArrayList<>());
+        }
+        for(int [] road: roads){
+            adj.get(road[0]).add(new Pair(road[1],road[2]));
+            adj.get(road[1]).add(new Pair(road[0],road[2]));
+        }
+        int [] dis = new int[n];
+        int [] ways = new int[n];
+        Arrays.fill(dis,Integer.MAX_VALUE);
+        Arrays.fill(ways,0);
+        dis[0]=0;
+        ways[0]=1;
+        Queue<Pair<Integer,Integer>> pq =
+                new PriorityQueue<>(Comparator.comparingInt(Pair::getKey));
+        pq.add(new Pair(0,0));
+        while(!pq.isEmpty()){
+            Pair<Integer,Integer> pair = pq.poll();
+            int u = pair.getKey();
+            int time = pair.getValue();
+            for(Pair<Integer,Integer> it: adj.get(u)){
+                int disTime = it.getValue();
+                int v = it.getKey();
+                if(time+disTime<dis[v]){
+                    pq.add(new Pair(v,time+disTime));
+                    dis[v]=time+disTime;
+                    ways[v]=ways[u];
+                }
+                else if(time+disTime==dis[v]){
+                    ways[v]=ways[v]+ways[u];
+                }
+            }
+        }
+        return ways[n-1]%mod;
     }
 
 }

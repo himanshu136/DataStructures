@@ -5,10 +5,12 @@ import com.sun.xml.internal.ws.addressing.WsaTubeHelper;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.stream.IntStream;
 
 public class DP {
     static int mod= 1000000007;
@@ -619,5 +621,45 @@ public class DP {
         return one || two;
     }
 
+    public static int minimumDeleteSum() {
+        String s1 = "sea";
+        String s2 ="eat";
+       return helper(s1,s2,s1.length()-1,s2.length()-1);
+    }
+    public static int helper(String s1, String s2, int i, int j){
+        if(i<0 && j<0){
+            return 0;
+        }
+        if(i<0){
+            int deleteCost =0;
+            for (int k=0;k<j;k++){
+                deleteCost+=s2.charAt(k);
+            }
+            return deleteCost;
+        }
+        if(j<0){
+            int deleteCost =0;
+            for (int k = 0; k < i; k++) {
+                deleteCost+=s1.charAt(k);
+            }
+            return deleteCost;
+        }
+        if(s1.charAt(i)==s2.charAt(j)){
+            return helper(s1,s2,i-1,j-1);
+        }
+        return Math.min(s1.charAt(i)+helper(s1,s2,i-1,j),s2.charAt(j)+helper(s1,s2,i,j-1));
     }
 
+    public static boolean workBreak(String s, List<String> words){
+        boolean []dp = new boolean[s.length()+1];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j <=i; j++) {
+                String subString = s.substring(j,i+1);
+                if(words.contains(subString))dp[i]=true;
+                if(dp[s.length()-1]) return true;
+            }
+        }
+        return false;
+    }
+
+    }
