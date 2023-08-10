@@ -33,5 +33,9 @@ public class ArrayProblems {
             }
         }
         Arrays.stream(arr).forEach(System.out::println);
+
+        String s="poiinter";
+        System.out.println(s.substring(0,2));
     }
+
 }

@@ -2,6 +2,8 @@ package com.datastructures;
 
 import com.sun.xml.internal.ws.addressing.WsaTubeHelper;
 
+import javax.xml.ws.handler.HandlerResolver;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -67,9 +69,10 @@ public class DP {
         solveRectangle();
         System.out.println("binomial coefficient is "+binomialCoefficient(2,0));
         System.out.println("permutation coefficient is "+permutationCoefficient(10,2));
-        oranges();
+//        oranges();
         System.out.println(longestValidParentheses(")()())"));
-
+        System.out.println("Subset sum is ");
+        findSubset();
     }
 
     public static String LPS(String s){
@@ -189,6 +192,18 @@ public class DP {
         if(sum<0)return false;
         return solveSubsetSum(subset, sum-subset[start],start+1) ||
                 solveSubsetSum(subset,sum,start+1);
+    }
+
+    public static void findSubset(){
+        int []subset=new int []{3, 34, 4, 12, 35, 2};
+        System.out.println(solveNumberOfSubsetSum(subset,37,0));
+    }
+    public static int solveNumberOfSubsetSum(int [] subset, int sum, int start){
+        if(start>=subset.length) return 0;
+        if(sum==0) return 1;
+        if(sum<0)return 0;
+        return solveNumberOfSubsetSum(subset, sum-subset[start],start+1) +
+                solveNumberOfSubsetSum(subset,sum,start+1);
     }
 
 
